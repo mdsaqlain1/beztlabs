@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
-import '../types/express'; // Ensure the custom type is loaded
+import '../types/express';
 import Task from '../models/taskModel';
 import { Types } from 'mongoose';
-
 
 interface AuthRequest extends Request {
   user?: {
@@ -10,10 +9,11 @@ interface AuthRequest extends Request {
   };
 }
 
-export const getAllTasks = async (req: AuthRequest, res: Response) => {
+export const getAllTasks = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized: User not found' });
+      res.status(401).json({ error: 'Unauthorized: User not found' });
+      return;
     }
     const tasks = await Task.find({ user: req.user._id });
     res.status(200).json(tasks);
@@ -22,10 +22,11 @@ export const getAllTasks = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const createTask = async (req: AuthRequest, res: Response) => {
+export const createTask = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized: User not found' });
+      res.status(401).json({ error: 'Unauthorized: User not found' });
+      return;
     }
     const { title, description } = req.body;
     const task = new Task({
@@ -41,10 +42,11 @@ export const createTask = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getTaskById = async (req: AuthRequest, res: Response) => {
+export const getTaskById = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized: User not found' });
+      res.status(401).json({ error: 'Unauthorized: User not found' });
+      return;
     }
     const task = await Task.findOne({ 
       _id: req.params.id, 
@@ -52,7 +54,8 @@ export const getTaskById = async (req: AuthRequest, res: Response) => {
     });
     
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      res.status(404).json({ error: 'Task not found' });
+      return;
     }
     
     res.status(200).json(task);
@@ -61,20 +64,22 @@ export const getTaskById = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateTask = async (req: AuthRequest, res: Response) => {
+export const updateTask = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized: User not found' });
+      res.status(401).json({ error: 'Unauthorized: User not found' });
+      return;
     }
     const { title, description, completed, category } = req.body;
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, user: req.user._id },
-      { title, description, completed, category},
+      { title, description, completed, category },
       { new: true }
     );
     
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      res.status(404).json({ error: 'Task not found' });
+      return;
     }
     
     res.status(200).json(task);
@@ -83,10 +88,11 @@ export const updateTask = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const deleteTask = async (req: AuthRequest, res: Response) => {
+export const deleteTask = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized: User not found' });
+      res.status(401).json({ error: 'Unauthorized: User not found' });
+      return;
     }
     const task = await Task.findOneAndDelete({ 
       _id: req.params.id, 
@@ -94,7 +100,8 @@ export const deleteTask = async (req: AuthRequest, res: Response) => {
     });
     
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      res.status(404).json({ error: 'Task not found' });
+      return;
     }
     
     res.status(200).json({ message: 'Task deleted successfully' });
@@ -103,10 +110,11 @@ export const deleteTask = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const toggleTaskStatus = async (req: AuthRequest, res: Response) => {
+export const toggleTaskStatus = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized: User not found' });
+      res.status(401).json({ error: 'Unauthorized: User not found' });
+      return;
     }
     const task = await Task.findOne({ 
       _id: req.params.id, 
@@ -114,7 +122,8 @@ export const toggleTaskStatus = async (req: AuthRequest, res: Response) => {
     });
     
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      res.status(404).json({ error: 'Task not found' });
+      return;
     }
     
     task.completed = !task.completed;
