@@ -13,9 +13,7 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
-app.use(cors({
-  origin: process.env.FRONTEND_URL, // Adjust this to your frontend URL
-}));
+app.use(cors());
 
 // Routes
 app.use("/api/auth", authRoutes);
