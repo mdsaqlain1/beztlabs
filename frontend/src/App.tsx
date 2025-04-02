@@ -3,7 +3,6 @@ import "./App.css";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import TaskItem from "./components/TaskItem";
 import AddTask from "./components/addTask";
 import EditTask from "./components/editTask";
 

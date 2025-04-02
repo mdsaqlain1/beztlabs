@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Container,
   Typography,
@@ -12,22 +12,27 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
-} from '@mui/material';
-import { getTaskById, updateTask } from '../services/taskService';
+  MenuItem,
+} from "@mui/material";
+import { getTaskById, updateTask } from "../services/taskService";
 
 const EditTask: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [task, setTask] = useState({
-    title: '',
-    description: '',
+  const [task, setTask] = useState<{
+    title: string;
+    description: string;
+    completed: boolean;
+    category: "Work" | "Personal" | "Other";
+  }>({
+    title: "",
+    description: "",
     completed: false,
-    category: 'Work' as const
+    category: "Work", // Default value
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -37,11 +42,11 @@ const EditTask: React.FC = () => {
           title: data.title,
           description: data.description,
           completed: data.completed,
-          category: data.category || 'Work'
+          category: data.category || "Work",
         });
       } catch (err) {
-        setError('Failed to load task');
-        console.error('Error fetching task:', err);
+        setError("Failed to load task");
+        console.error("Error fetching task:", err);
       } finally {
         setLoading(false);
       }
@@ -53,14 +58,14 @@ const EditTask: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    setError('');
+    setError("");
 
     try {
       await updateTask(id!, task);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
-      setError('Failed to update task. Please try again.');
-      console.error('Error updating task:', err);
+      setError("Failed to update task. Please try again.");
+      console.error("Error updating task:", err);
     } finally {
       setSubmitting(false);
     }
@@ -68,16 +73,19 @@ const EditTask: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setTask(prev => ({ ...prev, [name]: value }));
+    setTask((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleToggleComplete = () => {
-    setTask(prev => ({ ...prev, completed: !prev.completed }));
+    setTask((prev) => ({ ...prev, completed: !prev.completed }));
   };
 
   if (loading) {
     return (
-      <Container maxWidth="sm" sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+      <Container
+        maxWidth="sm"
+        sx={{ display: "flex", justifyContent: "center", mt: 4 }}
+      >
         <CircularProgress />
       </Container>
     );
@@ -89,11 +97,11 @@ const EditTask: React.FC = () => {
         <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
           Edit Task
         </Typography>
-        
-        <Box 
-          component="form" 
+
+        <Box
+          component="form"
           onSubmit={handleSubmit}
-          sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
+          sx={{ display: "flex", flexDirection: "column", gap: 3 }}
         >
           <TextField
             label="Title"
@@ -105,7 +113,7 @@ const EditTask: React.FC = () => {
             variant="outlined"
             inputProps={{ maxLength: 100 }}
           />
-          
+
           <TextField
             label="Description"
             name="description"
@@ -122,7 +130,12 @@ const EditTask: React.FC = () => {
             <Select
               name="category"
               value={task.category}
-              onChange={(e) => setTask({...task, category: e.target.value as 'Work' | 'Personal' | 'Other'})}
+              onChange={(e) =>
+                setTask({
+                  ...task,
+                  category: e.target.value as "Work" | "Personal" | "Other",
+                })
+              }
               label="Category"
             >
               <MenuItem value="Work">Work</MenuItem>
@@ -131,7 +144,7 @@ const EditTask: React.FC = () => {
             </Select>
           </FormControl>
 
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <Checkbox
               checked={task.completed}
               onChange={handleToggleComplete}
@@ -139,22 +152,22 @@ const EditTask: React.FC = () => {
             />
             <Typography>Mark as completed</Typography>
           </Box>
-          
+
           {error && (
             <Typography color="error" sx={{ mt: 1 }}>
               {error}
             </Typography>
           )}
-          
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
             <Button
               variant="outlined"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate("/dashboard")}
               disabled={submitting}
             >
               Cancel
             </Button>
-            
+
             <Button
               type="submit"
               variant="contained"
@@ -163,10 +176,12 @@ const EditTask: React.FC = () => {
             >
               {submitting ? (
                 <>
-                  <CircularProgress size={24} sx={{ color: 'white', mr: 1 }} />
+                  <CircularProgress size={24} sx={{ color: "white", mr: 1 }} />
                   Saving...
                 </>
-              ) : 'Save Changes'}
+              ) : (
+                "Save Changes"
+              )}
             </Button>
           </Box>
         </Box>

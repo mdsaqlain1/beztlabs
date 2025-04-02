@@ -25,16 +25,11 @@ import {
   deleteTask,
   toggleTaskStatus,
 } from "../services/taskService";
-import { FormControl, InputLabel, Select, MenuItem, Chip } from "@mui/material";
+import { Chip } from "@mui/material";
 
 const Dashboard: React.FC = () => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [categoryFilter, setCategoryFilter] = useState<string>("All");
-  const filteredTasks =
-    categoryFilter === "All"
-      ? tasks
-      : tasks.filter((task) => task.category === categoryFilter);
 
   const navigate = useNavigate();
 
