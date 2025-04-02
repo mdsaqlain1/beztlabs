@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import '../types/global'
 import Task from '../models/taskModel';
 import { Types } from 'mongoose';
 
