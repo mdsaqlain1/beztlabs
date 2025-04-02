@@ -12,7 +12,7 @@ import { authenticate } from '../middleware/authMiddleware';
 const router = express.Router();
 
 // Apply authentication middleware to all task routes
-router.use(authenticate);
+router.use(authenticate as express.RequestHandler);
 
 // Task routes following the same pattern as authRoutes
 router.get('/', getAllTasks);

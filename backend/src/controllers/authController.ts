@@ -29,7 +29,7 @@ export const signUp = async (req: Request, res: Response) => {
     await newUser.save();
 
     // Generate JWT token
-    const token = jwt.sign({ id: newUser._id.toString() }, process.env.JWT_SECRET , {
+    const token = jwt.sign({ id: newUser._id.toString() }, process.env.JWT_SECRET || "S3CR3T", {
       expiresIn: '1h',
     });
 
@@ -60,7 +60,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user._id.toString() }, process.env.JWT_SECRET , {
+    const token = jwt.sign({ id: user._id.toString() }, process.env.JWT_SECRET || "S3CR3T", {
       expiresIn: '1h',
     });
 

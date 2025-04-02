@@ -1,8 +1,20 @@
 import { Request, Response } from 'express';
+import '../types/express'; // Ensure the custom type is loaded
 import Task from '../models/taskModel';
+import { Types } from 'mongoose';
 
-export const getAllTasks = async (req: Request, res: Response) => {
+
+interface AuthRequest extends Request {
+  user?: {
+    _id: Types.ObjectId;
+  };
+}
+
+export const getAllTasks = async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized: User not found' });
+    }
     const tasks = await Task.find({ user: req.user._id });
     res.status(200).json(tasks);
   } catch (error) {
@@ -10,8 +22,11 @@ export const getAllTasks = async (req: Request, res: Response) => {
   }
 };
 
-export const createTask = async (req: Request, res: Response) => {
+export const createTask = async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized: User not found' });
+    }
     const { title, description } = req.body;
     const task = new Task({
       title,
@@ -26,8 +41,11 @@ export const createTask = async (req: Request, res: Response) => {
   }
 };
 
-export const getTaskById = async (req: Request, res: Response) => {
+export const getTaskById = async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized: User not found' });
+    }
     const task = await Task.findOne({ 
       _id: req.params.id, 
       user: req.user._id 
@@ -43,8 +61,11 @@ export const getTaskById = async (req: Request, res: Response) => {
   }
 };
 
-export const updateTask = async (req: Request, res: Response) => {
+export const updateTask = async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized: User not found' });
+    }
     const { title, description, completed, category } = req.body;
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, user: req.user._id },
@@ -62,8 +83,11 @@ export const updateTask = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteTask = async (req: Request, res: Response) => {
+export const deleteTask = async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized: User not found' });
+    }
     const task = await Task.findOneAndDelete({ 
       _id: req.params.id, 
       user: req.user._id 
@@ -79,8 +103,11 @@ export const deleteTask = async (req: Request, res: Response) => {
   }
 };
 
-export const toggleTaskStatus = async (req: Request, res: Response) => {
+export const toggleTaskStatus = async (req: AuthRequest, res: Response) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized: User not found' });
+    }
     const task = await Task.findOne({ 
       _id: req.params.id, 
       user: req.user._id 

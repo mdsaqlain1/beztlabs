@@ -1,21 +1,33 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';  // Adjust this path as necessary
+import User from '../models/User';
+import { Types } from 'mongoose';
 
-interface AuthRequest extends Request {
-  user?: any; // Make this type specific if you have a User model type
+// Extend the Express Request type
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        _id: Types.ObjectId;
+      };
+    }
+  }
 }
 
-export const authenticate = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  
-  if (!token) {
-    return res.status(401).json({ error: 'Authorization token required' });
-  }
-
+export const authenticate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    
+    if (!token) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
-    const user = await User.findById(decoded.id.toString()); // Ensure string ID
+    const user = await User.findById(decoded.id);
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -24,12 +36,6 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     req.user = user;
     next();
   } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ error: 'Token expired. Please login again.' });
-    }
-    if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
-    res.status(401).json({ error: 'Authentication failed' });
+    res.status(401).json({ error: 'Please authenticate' });
   }
 };
